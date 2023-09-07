@@ -11,12 +11,72 @@ C言語でCpputestを利用しているが、時間が空いた場合に忘れ�
 - [[https://cpputest.github.io/][Cpputest]]
 - [[https://github.com/meekrosoft/fff][Fake Function Framework(fff)]]
 
+
+ついでにC++についても学びたい。
+
 参考文献
 
 - テスト駆動開発による組み込みプログラミング C言語とオブジェクト指向で学ぶアジャイルな設計
 
 * 小さなサンプル(ex)
 
+#+begin_src cpp
+  #include <CppUTest/TestHarness.h>
+
+  TEST_GROUP(FirstTestGroup)
+  {
+  };
+
+  TEST(FirstTestGroup, FirstTest)
+  {
+    FAIL("Fail me!");
+  }
+#+end_src
+
 #+begin_src shell
   g++ -Wall AllTests.cpp first_Test.cpp -lCppUTest
+#+end_src
+
+** first_Test.cpp
+
+気になったのでマクロ展開してみた。
+
+#+begin_src shell
+  g++ -E -P -c first_Test.cpp
+#+end_src
+
+#+begin_src cpp
+  extern int externTestGroupFirstTestGroup;
+
+  int externTestGroupFirstTestGroup = 0;
+
+  struct TEST_GROUP_CppUTestGroupFirstTestGroup : public Utest
+  {
+  };
+
+  class TEST_FirstTestGroup_FirstTest_TestShell;
+
+  extern TEST_FirstTestGroup_FirstTest_TestShell TEST_FirstTestGroup_FirstTest_TestShell_instance;
+
+  class TEST_FirstTestGroup_FirstTest_Test : public TEST_GROUP_CppUTestGroupFirstTestGroup {
+  public:
+    TEST_FirstTestGroup_FirstTest_Test () : TEST_GROUP_CppUTestGroupFirstTestGroup () {}
+    void testBody() override;
+  };
+
+  class TEST_FirstTestGroup_FirstTest_TestShell : public UtestShell {
+    virtual Utest* createTest() override {
+      return new("first_Test.cpp", 7) TEST_FirstTestGroup_FirstTest_Test;
+    }
+  } TEST_FirstTestGroup_FirstTest_TestShell_instance;
+
+  static TestInstaller TEST_FirstTestGroup_FirstTest_Installer(TEST_FirstTestGroup_FirstTest_TestShell_instance, "FirstTestGroup", "FirstTest", "first_Test.cpp",7);
+
+  void TEST_FirstTestGroup_FirstTest_Test::testBody()
+  {
+    do {
+      UtestShell::getCurrent()->fail("Fail me!", "first_Test.cpp", 9);
+    }
+    while(0);
+  }
 #+end_src
