@@ -1,0 +1,22 @@
+#+title: CUnitTest
+#+startup: content
+
+* 動機
+
+C言語でCpputestを利用しているが、時間が空いた場合に忘れて、
+再利用する際に毎回躓くので、復習を兼ねてメモを残す。
+
+ついでに、単体試験時に利用しているFFFについても残す。
+
+- [[https://cpputest.github.io/][Cpputest]]
+- [[https://github.com/meekrosoft/fff][Fake Function Framework(fff)]]
+
+参考文献
+
+- テスト駆動開発による組み込みプログラミング C言語とオブジェクト指向で学ぶアジャイルな設計
+
+* 小さなサンプル(ex)
+
+#+begin_src shell
+  g++ -Wall AllTests.cpp first_Test.cpp -lCppUTest
+#+end_src
