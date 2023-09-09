@@ -1,1 +1,0 @@
-AllTests: ../com/AllTests.cpp
