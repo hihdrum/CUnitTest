@@ -29,10 +29,10 @@ TEST_GROUP(tg01)
 
 TEST(tg01, t01)
 {
-  int x = 0;
+  int x = 0xff;
   MockSet_init_x(&x);
 
   int iReturnValue = use_init_x();
 
-  LONGS_EQUAL(0, iReturnValue);
+  LONGS_EQUAL(x, iReturnValue);
 }
