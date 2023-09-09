@@ -1,12 +1,17 @@
 runTests : AllTests
 	@./AllTests -v
 
+CXXFLAGS = -Wall -g
+LDFLAGS = -lCppUTest -lCppUTestExt
+
 AllTests : ../com/AllTests.cpp test.cpp use_init_x.o
-	g++ -Wall ../com/AllTests.cpp test.cpp use_init_x.o -lCppUTest -lCppUTestExt -o AllTests
+	$(CXX) $(CXXFLAGS) $? $(LDFLAGS) -o $@
+
+CFLAGS = -Wall -c -g
 
 use_init_x.o : use_init_x.c
-	gcc -Wall -c use_init_x.c -o use_init_x.o
+	$(CC) $(CFLAGS) $< -o $@
 
 .PHONY: clean
 clean:
-	rm -f AllTests *.o a.out
+	rm -f AllTests *.o a.out *.d
