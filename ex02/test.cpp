@@ -3,7 +3,8 @@
 
 extern "C" {
 
-int use_init_x(void);
+#include "use_init_x.h"
+#include "init_x.h"
 
 void init_x(int *x)
 {
