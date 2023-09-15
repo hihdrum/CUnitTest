@@ -9,31 +9,50 @@ extern "C" {
 int dep(struct MyType *tpMyType)
 {
   mock().actualCall("dep")
-    .withParameter("tpMyType", tpMyType);
+    .withParameterOfType("MyType", "tpMyType", tpMyType);
   return mock().intReturnValue();
 }
 
 void MockSet_dep(int iReturnValue, struct MyType *tpMyType)
 {
   mock().expectOneCall("dep")
-    .withParameter("tpMyType", tpMyType)
+    .withParameterOfType("MyType", "tpMyType", tpMyType)
     .andReturnValue(iReturnValue);
 }
 
 }
 
+class MyTypeComparator : public MockNamedValueComparator
+{
+public:
+  virtual bool isEqual(const void* object1, const void* object2)
+  {
+    return 0 == memcmp(object1, object2, sizeof(struct MyType));
+  }
+  virtual SimpleString valueToString(const void* object)
+  {
+    struct MyType *tpMyType = (struct MyType *)object;
+    return StringFrom(tpMyType->f);
+  }
+};
+
+
 TEST_GROUP(tg01)
 {
   void teardown() {
     mock().clear();
+    mock().removeAllComparatorsAndCopiers();
   }
 
 };
 
 TEST(tg01, sample)
 {
+  MyTypeComparator comparator;
+  mock().installComparator("MyType", comparator);
+
   struct MyType tMyType = { 10 };
-  MockSet_dep(100, &tMyType);
+  MockSet_dep(5, &tMyType);
 
   int iReturnValue = use();
 
