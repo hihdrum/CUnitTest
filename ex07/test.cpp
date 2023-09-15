@@ -51,7 +51,7 @@ TEST(tg01, sample)
   MyTypeComparator comparator;
   mock().installComparator("MyType", comparator);
 
-  struct MyType tMyType = { 10 };
+  struct MyType tMyType = { 100 };
   MockSet_dep(5, &tMyType);
 
   int iReturnValue = use();
