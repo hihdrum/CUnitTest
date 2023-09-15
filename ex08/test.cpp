@@ -9,14 +9,14 @@ extern "C" {
 int dep(char *cp)
 {
   mock().actualCall("dep")
-    .withParameter("cp", cp);
+    .withParameter("cp", *cp);
   return mock().intReturnValue();
 }
 
 void MockSet_dep(int iReturnValue, char *cp)
 {
   mock().expectOneCall("dep")
-    .withParameter("cp", cp)
+    .withParameter("cp", *cp)
     .andReturnValue(iReturnValue);
 }
 
