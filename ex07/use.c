@@ -2,7 +2,7 @@
 
 int use(void)
 {
-  struct MyType tMyType = { 10 };
+  struct MyType tMyType = { 10, 'a' };
   int iDepResult = dep(&tMyType);
   if(0 == iDepResult)
   {

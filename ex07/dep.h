@@ -4,6 +4,7 @@
 struct MyType
 {
   int f;
+  char f2;
 };
 
 int dep(struct MyType *pMyType);

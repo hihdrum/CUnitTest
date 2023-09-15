@@ -32,7 +32,7 @@ public:
   virtual SimpleString valueToString(const void* object)
   {
     struct MyType *tpMyType = (struct MyType *)object;
-    return StringFrom(tpMyType->f);
+    return StringFromFormat("f:%d, f2:%d", tpMyType->f, tpMyType->f2);
   }
 };
 
