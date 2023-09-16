@@ -9,14 +9,14 @@ extern "C" {
 int dep(int *ip)
 {
   mock().actualCall("dep")
-    .withParameter("ip", ip);
+    .withParameter("ip", *ip);
   return mock().intReturnValue();
 }
 
 void MockSet_dep(int iReturnValue, int *ip)
 {
   mock().expectOneCall("dep")
-    .withParameter("ip", ip)
+    .withParameter("ip", *ip)
     .andReturnValue(iReturnValue);
 }
 
@@ -25,6 +25,7 @@ void MockSet_dep(int iReturnValue, int *ip)
 TEST_GROUP(tg01)
 {
   void teardown() {
+    mock().checkExpectations();
     mock().clear();
   }
 
