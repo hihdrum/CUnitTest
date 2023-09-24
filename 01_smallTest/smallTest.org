@@ -1,0 +1,105 @@
+#+title: 小さなテスト
+
+CppUTestの動作確認として以下を行う。
+
+- 小さな失敗するだけのテストの作成
+- テスト実行用のドライバの作成
+- テストの動作確認
+- Makefileの作成
+
+* 小さな失敗するだけのテストの作成
+
+小さな動作確認用の[[失敗するテスト][テスト]]と[[テストドライバ][ドライバ]]を作成し、CppUTestが利用可能可能な状態になっているかを確認する。
+
+#+name: 失敗するテスト
+#+begin_src cpp
+#include <CppUTest/TestHarness.h>
+
+TEST_GROUP(SmallTestGroup)
+{
+};
+
+TEST(SmallTestGroup, FailTest)
+{
+  FAIL("Fail me!");
+}
+#+end_src
+
+#+begin_comment
+:tangleでファイルを出力したいが欲しい結果にならない。
+ファイル内容を自動で挿入したいが方法がわからない。
+#+end_comment
+
+* テスト実行用のドライバ作成
+
+#+name: テストドライバ
+#+begin_src cpp :tangle AllTests.cpp
+  #include <CppUTest/CommandLineTestRunner.h>
+
+  int main(int ac, char** av)
+  {
+     return CommandLineTestRunner::RunAllTests(ac, av);
+  }
+#+end_src
+
+* テストの動作確認
+
+#+name: コンパイルと実行
+#+begin_src shell :results output
+  g++ -Wall AllTests.cpp small_Test.cpp -lCppUTest -o AllTests
+  ./AllTests
+#+end_src
+
+インストールしたCppUTestの場所によっては、$-I$や$-L$オプションも必要になる。
+各自のインストール場所合わせて適宜オプションを追加しコンパイルする。
+
+#+RESULTS: コンパイルと実行
+
+#+begin_comment
+./AllTestsの実行結果が自動で入らないなぜだ。
+解決するまでは、以下のexampleで対応する。
+#+end_comment
+
+#+begin_example
+$ ./AllTests 
+
+small_Test.cpp:9: error: Failure in TEST(SmallTestGroup, FailTest)
+	Fail me!
+
+.
+Errors (1 failures, 1 tests, 1 ran, 1 checks, 0 ignored, 0 filtered out, 0 ms)
+#+end_example
+
+動作の確認ができた。
+
+* Makefileの作成
+
+今後の利用を見越して、Makefileを用意する。
+
+#+begin_src makefile
+.PHONY: runTests
+runTests : AllTests
+	@./AllTests -v
+
+AllTests : AllTests.cpp first_Test.cpp
+	g++ -Wall AllTests.cpp first_Test.cpp -lCppUTest -o AllTests
+
+.PHONY: clean
+clean:
+	rm -f AllTests *.o a.out
+#+end_src
+
+#+name: makeによる実行例
+#+begin_example
+$ make
+g++ -Wall AllTests.cpp first_Test.cpp -lCppUTest -o AllTests
+TEST(FirstTestGroup, FirstTest)
+first_Test.cpp:9: error: Failure in TEST(FirstTestGroup, FirstTest)
+	Fail me!
+
+ - 0 ms
+
+Errors (1 failures, 1 tests, 1 ran, 1 checks, 0 ignored, 0 filtered out, 0 ms)
+
+make: *** [Makefile:3: runTests] エラー 1
+#+end_example
