@@ -1,3 +1,4 @@
+.PHONY: runTests
 runTests : AllTests
 	@./AllTests -v
 
