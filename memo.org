@@ -18,8 +18,60 @@ C言語でCpputestを利用しているが、時間が空いた場合に忘れ�
 
 - テスト駆動開発による組み込みプログラミング C言語とオブジェクト指向で学ぶアジャイルな設計
 
+* 用意したいサンプル
+
+- 引数
+  - あり
+    - 渡し
+      - 値
+      - 参照
+    - 型
+      - プリミティブ
+      - 独自
+  - なし
+- 戻り値
+  - あり
+    - 値
+      - プリミティブ
+      - 独自
+    - 参照
+      - プリミティブ
+      - 独自
+  - なし
+
+
+| 戻り値 | 引数          | 例   | 作成状況 | 備考               |
+|--------+---------------+------+----------+--------------------|
+| void   | int *(output) | ex02 | DONE     |                    |
+| int    | void          | ex03 | DONE     |                    |
+| void   | char *(input) | ex04 | DONE     | 文字列へのポインタ |
+| int    | void          | ex05 | DONE     | 2回の呼び出し      |
+| void   | int, int      | ex06 | DONE     | 2引数関数          |
+| int    | struct        | ex07 | DONE     | 自作の型           |
+| int    | char *        | ex08 | DONE     | 文字へのポインタ   |
+| int    | int *(input)  | ex09 |          |                    |
+
+
+
+- その他
+  - malloc, free
+  - static
+  - 同一モジュール内に依存関係がある関数のテスト
+
+    
+
+- void func(void)
+- int func(void)
+- int func(int)
+
+
+
 * 小さなサンプル(ex)
 
+小さな動作確認用のサンプルは以下のとおりである。
+
+
+#+name: first_Test.cpp
 #+begin_src cpp
   #include <CppUTest/TestHarness.h>
 
@@ -33,11 +85,49 @@ C言語でCpputestを利用しているが、時間が空いた場合に忘れ�
   }
 #+end_src
 
-#+begin_src shell
-  g++ -Wall AllTests.cpp first_Test.cpp -lCppUTest
+#+name: AllTests.cpp
+#+begin_src cpp
+  #include <CppUTest/CommandLineTestRunner.h>
+
+  int main(int ac, char** av)
+  {
+     return CommandLineTestRunner::RunAllTests(ac, av);
+  }
 #+end_src
 
+#+name: コンパイルと実行
+#+begin_src shell
+  g++ -Wall AllTests.cpp first_Test.cpp -lCppUTest -o AllTests
+#+end_src
+
+#+begin_example
+$ ./AllTests -v
+TEST(FirstTestGroup, FirstTest)
+first_Test.cpp:9: error: Failure in TEST(FirstTestGroup, FirstTest)
+	Fail me!
+
+ - 1 ms
+
+Errors (1 failures, 1 tests, 1 ran, 1 checks, 0 ignored, 0 filtered out, 1 ms)
+#+end_example
+
+
 ** first_Test.cpp
+
+
+
+#+begin_src cpp
+  #include <CppUTest/TestHarness.h>
+
+  TEST_GROUP(FirstTestGroup)
+  {
+  };
+
+  TEST(FirstTestGroup, FirstTest)
+  {
+    FAIL("Fail me!");
+  }
+#+end_src
 
 気になったのでマクロ展開してみた。
 
@@ -80,3 +170,49 @@ C言語でCpputestを利用しているが、時間が空いた場合に忘れ�
     while(0);
   }
 #+end_src
+
+* int*を引数にとる関数を利用する関数のテスト(ex02)
+
+* 2023/09/15(金)
+
+** 独自構造体のポインタを引数に取る関数のテスト
+
+#+begin_example
+TEST(tg01, sample)
+test.cpp:33: error: Failure in TEST(tg01, sample)
+	Mock Failure: Unexpected parameter value to parameter "tpMyType" to function "dep": <0x7ffef2a0f290>
+	EXPECTED calls that WERE NOT fulfilled related to function: dep
+		dep -> void* tpMyType: <0x7ffef2a0f2c8> (expected 1 call, called 0 times)
+	EXPECTED calls that WERE fulfilled related to function: dep
+		<none>
+	ACTUAL unexpected parameter passed to function: dep
+		void* tpMyType: <0x7ffef2a0f290>
+
+ - 0 ms
+
+Errors (1 failures, 1 tests, 1 ran, 1 checks, 0 ignored, 0 filtered out, 0 ms)
+
+make: *** [Makefile:2: runTests] エラー 1
+#+end_example
+
+
+
+* 2023/09/16(土)
+** checkExpectationsについて
+
+- Coreマニュアル - C Interfaceのコードに記載がある。
+- CppUMock Manualに説明がある。
+  
+*** ex09での施行例
+
+- mock().checkExpectations()の呼び出し無しで、expectOneCallを複数指定、実際の呼び出し1回、
+  異常は報告されなかった。
+- mock().checkExpectations()の呼び出し有りで、expectOneCallを複数指定、実際の呼び出し1回、
+  異常が報告された。クラッシュはしなかった。
+  クラッシュした気がするのだが....バージョン違いのためか?
+
+*** Plugin Manual
+
+- SetPointerPluginが使えそうである。
+  - malloc, freeを呼び出す試験に利用できないだろうか。
+- MockSupportPluginを利用したほうがよいかも。
